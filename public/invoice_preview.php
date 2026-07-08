@@ -57,7 +57,7 @@ $company = companyInfo();
                 <button type="button" class="btn-primary" onclick="window.print()">
                     <i class="fa-solid fa-print"></i> 印刷 / PDF保存
                 </button>
-                <a href="invoice_edit.php?id=<?= h($invoice['id']) ?>" class="back-btn">編集に戻る</a>
+                <a href="invoice_edit.php?id=<?= h($invoice['id']) ?>" class="back-btn" id="back-to-edit-link">編集に戻る</a>
             </div>
         </div>
 
@@ -133,6 +133,8 @@ $company = companyInfo();
             </table>
         </div>
     </div>
+
+    <script src="js/invoice-preview.js"></script>
 </body>
 
 </html>

@@ -418,7 +418,6 @@ body:has(.sidebar) {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
   text-decoration: none;
   color: var(--color-navy-900);
   font-weight: 600;
@@ -429,8 +428,6 @@ body:has(.sidebar) {
 }
 
 .menu-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
   border-color: var(--color-blue-600);
 }
 
@@ -789,6 +786,11 @@ body:has(.sidebar) {
   font-size: 0.9rem;
 }
 
+.invoice-sheet__info {
+  width: auto;
+  min-width: 30%;
+}
+
 .invoice-sheet__info th,
 .invoice-sheet__info td {
   padding: 4px 0;
@@ -804,7 +806,6 @@ body:has(.sidebar) {
 }
 
 .invoice-sheet__company {
-  text-align: right;
   font-size: 0.85rem;
   color: var(--color-text-muted);
   margin-bottom: 32px;
