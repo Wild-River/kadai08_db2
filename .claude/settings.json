@@ -8,7 +8,9 @@
       "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -S /Applications/MAMP/tmp/mysql/mysql.sock bean_trade -e ' *)",
       "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -l /Applications/MAMP/htdocs/kadai08_db2/public/customer_delete.php)",
       "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -l /Applications/MAMP/htdocs/kadai08_db2/public/customer_edit.php)",
-      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -l /Applications/MAMP/htdocs/kadai08_db2/public/bean_new.php)"
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -l /Applications/MAMP/htdocs/kadai08_db2/public/bean_new.php)",
+      "Read(//Users/rumi/Downloads/**)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -l /Applications/MAMP/htdocs/kadai08_db2/config/sidebar.php)"
     ]
   }
 }

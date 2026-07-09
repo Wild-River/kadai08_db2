@@ -30,9 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="ja">
 
 <head>
-    <meta charset="UTF-8">
     <title>顧客新規登録 | 請求書管理</title>
-    <link rel="stylesheet" href="css/style.css">
+    <?php require_once '../config/head.php'; ?>
 </head>
 
 <body>

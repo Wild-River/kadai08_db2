@@ -3,9 +3,8 @@
    ========================================================================== */
 
 :root {
-  --color-navy-900: #1a2332;
-  --color-navy-800: #1e293b;
-  --color-navy-700: #334155;
+  /* 基調色（深いグリーン） */
+  --color-forest-900: #2d3331;
 
   /* アクセントカラー（Gentelella風のエメラルドグリーン） */
   --color-primary-600: #1abb9c;
@@ -18,7 +17,6 @@
 
   --color-text: #1e293b;
   --color-text-muted: #64748b;
-  --color-text-subtle: #94a3b8;
 
   /* ステータス配色（Gentelella general_elements.html のトークンに準拠） */
   --color-danger: #d63939;
@@ -65,7 +63,7 @@ body {
 h1,
 h2 {
   margin: 0 0 8px;
-  color: var(--color-navy-900);
+  color: var(--color-forest-900);
   font-weight: 700;
 }
 
@@ -182,14 +180,14 @@ body:has(.sidebar) {
 }
 
 .sidebar {
-  width: 220px;
+  width: 200px;
   flex-shrink: 0;
   min-height: 100vh;
   position: sticky;
   top: 0;
   display: flex;
   flex-direction: column;
-  background: var(--color-navy-900);
+  background: var(--color-forest-900);
   padding: 20px 0;
 }
 
@@ -212,7 +210,6 @@ body:has(.sidebar) {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 0 12px;
 }
 
 .sidebar__group {
@@ -225,11 +222,11 @@ body:has(.sidebar) {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 12px;
-  border-radius: var(--radius-sm);
+  padding: 9px 20px;
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   font-size: 0.88rem;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -246,9 +243,16 @@ body:has(.sidebar) {
 }
 
 .sidebar__link--sub {
-  padding-left: 20px;
+  padding-left: 28px;
   font-size: 0.82rem;
   color: rgba(255, 255, 255, 0.6);
+}
+
+/* 現在開いているページに対応するリンクだけをハイライトする（config/sidebar.php の isSidebarLinkActive() 判定） */
+.sidebar__link.is-active,
+.sidebar__link.is-active:hover {
+  background: var(--color-bg);
+  color: var(--color-forest-900);
 }
 
 .sidebar__footer {
@@ -265,7 +269,7 @@ body:has(.sidebar) {
   gap: 4px;
   width: 36px;
   height: 36px;
-  background: var(--color-navy-900);
+  background: var(--color-forest-900);
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -281,38 +285,9 @@ body:has(.sidebar) {
   border-radius: 1px;
 }
 
-@media (max-width: 768px) {
-  body:has(.sidebar) {
-    display: block;
-  }
-
-  .menu-toggle {
-    display: flex;
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    z-index: 200;
-  }
-
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    min-height: 0;
-    z-index: 150;
-    transform: translateX(-100%);
-    transition: transform 0.2s ease;
-    box-shadow: var(--shadow-md);
-  }
-
-  .sidebar.is-open {
-    transform: translateX(0);
-  }
-
-  .container {
-    margin-top: 64px;
-  }
+/* サイドバーを開いた時にコンテンツを覆う半透明オーバーレイ（モバイル用、デスクトップでは非表示） */
+.sidebar-overlay {
+  display: none;
 }
 
 /* ==========================================================================
@@ -350,6 +325,58 @@ body:has(.sidebar) {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   padding: 28px;
+}
+
+@media (max-width: 768px) {
+  body:has(.sidebar) {
+    display: block;
+  }
+
+  .menu-toggle {
+    display: flex;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 200;
+  }
+
+  /* サイドバーが開いている間はボタンを隠す（ブランド名との重なりを防ぐ）。
+     閉じる操作はオーバーレイのクリックで行う */
+  .menu-toggle:has(+ .sidebar.is-open) {
+    display: none;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    min-height: 0;
+    z-index: 150;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: var(--shadow-md);
+  }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 140;
+  }
+
+  .sidebar.is-open ~ .sidebar-overlay {
+    display: block;
+  }
+
+  .container {
+    margin-top: 64px;
+  }
 }
 
 /* ==========================================================================
@@ -454,7 +481,7 @@ body:has(.sidebar) {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 20px;
   margin-top: 24px;
 }
@@ -470,7 +497,7 @@ body:has(.sidebar) {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   text-decoration: none;
-  color: var(--color-navy-900);
+  color: var(--color-forest-900);
   font-weight: 600;
   transition:
     transform 0.15s ease,
@@ -707,7 +734,7 @@ textarea.form-input {
 }
 
 .table-wrapper th a:hover {
-  color: var(--color-navy-900);
+  color: var(--color-forest-900);
 }
 
 .table-wrapper td {
@@ -781,12 +808,13 @@ textarea.form-input {
    ステータスバッジ
    ========================================================================== */
 
-.status-badge {
+.status-badge,
+.type-badge {
   display: inline-block;
   padding: 4px 12px;
   border-radius: var(--radius-pill);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -808,6 +836,22 @@ textarea.form-input {
 .status-overdue {
   background: var(--color-danger-bg);
   color: var(--color-danger);
+}
+
+/* 入出荷記録の種類（movement_list.php / bean_edit.php） */
+.type-in {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.type-reserve {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.type-out {
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
 }
 
 /* ==========================================================================
@@ -854,7 +898,7 @@ textarea.form-input {
   margin: 0;
   font-size: 1.75rem;
   letter-spacing: 0.1em;
-  color: var(--color-navy-900);
+  color: var(--color-forest-900);
 }
 
 .invoice-sheet__meta {
@@ -868,9 +912,9 @@ textarea.form-input {
 .invoice-sheet__customer-name {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--color-navy-900);
+  color: var(--color-forest-900);
   margin: 0 0 8px;
-  border-bottom: 2px solid var(--color-navy-900);
+  border-bottom: 2px solid var(--color-forest-900);
   padding-bottom: 6px;
 }
 
@@ -950,11 +994,11 @@ textarea.form-input {
 
 .invoice-sheet__summary .net th,
 .invoice-sheet__summary .net td {
-  border-top: 2px solid var(--color-navy-900);
+  border-top: 2px solid var(--color-forest-900);
   padding-top: 12px;
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--color-navy-900);
+  color: var(--color-forest-900);
 }
 
 @media print {
