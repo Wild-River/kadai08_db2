@@ -66,7 +66,7 @@ $clients = $stmt->fetchAll();
         <form method="get" action="" class="search-form">
             <input type="text" name="keyword" value="<?= h($keyword) ?>" placeholder="クライアント名・メールで検索" autocomplete="off">
             <button type="submit">検索</button>
-            <a href="clients_list.php" class="delete-btn">クリア</a>
+            <a href="clients_list.php" class="back-btn">クリア</a>
         </form>
 
         <div class="table-wrapper">

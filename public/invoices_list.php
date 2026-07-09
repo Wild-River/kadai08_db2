@@ -94,7 +94,7 @@ $statusLabels = statusLabels();
                 <?php endforeach; ?>
             </select>
             <button type="submit">検索</button>
-            <a href="invoices_list.php" class="delete-btn">クリア</a>
+            <a href="invoices_list.php" class="back-btn">クリア</a>
         </form>
 
         <div class="table-wrapper">

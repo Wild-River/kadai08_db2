@@ -122,208 +122,218 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container">
         <h1 class="page-title">請求書編集</h1>
         <div class="card">
-            <div class="tabs no-print">
-                <button type="button" class="tab-btn is-active" data-tab="edit">編集</button>
-                <button type="button" class="tab-btn" data-tab="preview">プレビュー</button>
-            </div>
+            <div class="edit-layout">
+                <div class="edit-layout__main">
+                    <form method="post" action="./invoice_edit.php" id="edit-form">
+                        <div class="form-group">
+                            <label class="form-label">クライアント
+                                <select name="client_id" class="form-input" required>
+                                    <option value="">選択してください</option>
+                                    <?php foreach ($clients as $client): ?>
+                                        <option value="<?= h($client['id']) ?>" <?= $invoice['client_id'] == $client['id'] ? 'selected' : '' ?>>
+                                            <?= h($client['name']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </label>
+                        </div>
 
-            <div class="tab-panel" data-tab-panel="edit">
-                <form method="post" action="./invoice_edit.php" id="edit-form">
-                    <div class="form-group">
-                        <label class="form-label">クライアント
-                            <select name="client_id" class="form-input" required>
-                                <option value="">選択してください</option>
-                                <?php foreach ($clients as $client): ?>
-                                    <option value="<?= h($client['id']) ?>" <?= $invoice['client_id'] == $client['id'] ? 'selected' : '' ?>>
-                                        <?= h($client['name']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </label>
-                    </div>
+                        <div class="form-group">
+                            <label class="form-label">請求書番号
+                                <input type="text" name="invoice_number" class="form-input" value="<?= h($invoice['invoice_number']) ?>" required>
+                            </label>
+                        </div>
 
-                    <div class="form-group">
-                        <label class="form-label">請求書番号
-                            <input type="text" name="invoice_number" class="form-input" value="<?= h($invoice['invoice_number']) ?>" required>
-                        </label>
-                    </div>
+                        <div class="form-group">
+                            <label class="form-label">件名
+                                <input type="text" name="title" class="form-input" value="<?= h($invoice['title']) ?>">
+                            </label>
+                        </div>
 
-                    <div class="form-group">
-                        <label class="form-label">件名
-                            <input type="text" name="title" class="form-input" value="<?= h($invoice['title']) ?>">
-                        </label>
-                    </div>
+                        <div class="form-group">
+                            <label class="form-label">ステータス
+                                <select name="status" class="form-input">
+                                    <?php foreach ($statusLabels as $key => $label): ?>
+                                        <option value="<?= h($key) ?>" <?= $invoice['status'] === $key ? 'selected' : '' ?>>
+                                            <?= h($label) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </label>
+                        </div>
 
-                    <div class="form-group">
-                        <label class="form-label">ステータス
-                            <select name="status" class="form-input">
-                                <?php foreach ($statusLabels as $key => $label): ?>
-                                    <option value="<?= h($key) ?>" <?= $invoice['status'] === $key ? 'selected' : '' ?>>
-                                        <?= h($label) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </label>
-                    </div>
+                        <div class="form-group">
+                            <label class="form-label">発行日
+                                <input type="date" name="issue_date" class="form-input" value="<?= h($invoice['issue_date']) ?>" required>
+                            </label>
+                        </div>
 
-                    <div class="form-group">
-                        <label class="form-label">発行日
-                            <input type="date" name="issue_date" class="form-input" value="<?= h($invoice['issue_date']) ?>" required>
-                        </label>
-                    </div>
+                        <div class="form-group">
+                            <label class="form-label">支払期限
+                                <input type="date" name="due_date" class="form-input" value="<?= h($invoice['due_date']) ?>" required>
+                            </label>
+                        </div>
 
-                    <div class="form-group">
-                        <label class="form-label">支払期限
-                            <input type="date" name="due_date" class="form-input" value="<?= h($invoice['due_date']) ?>" required>
-                        </label>
-                    </div>
+                        <div class="form-group">
+                            <label class="form-label">消費税率（%）
+                                <input type="number" name="tax_rate" class="form-input" value="<?= h($invoice['tax_rate']) ?>" required>
+                            </label>
+                        </div>
 
-                    <div class="form-group">
-                        <label class="form-label">消費税率（%）
-                            <input type="number" name="tax_rate" class="form-input" value="<?= h($invoice['tax_rate']) ?>" required>
-                        </label>
-                    </div>
-
-                    <h2>明細</h2>
-                    <table id="items-table">
-                        <thead>
-                            <tr>
-                                <th>品目</th>
-                                <th>数量</th>
-                                <th>単価</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="items-body">
-                            <?php if (empty($items)): ?>
-                                <!-- 明細が無い場合は空行を1つ用意 -->
+                        <h2>明細</h2>
+                        <table id="items-table">
+                            <thead>
                                 <tr>
-                                    <td><input type="text" name="item_name[]" class="form-input"></td>
-                                    <td><input type="number" name="quantity[]" class="form-input" value="1"></td>
-                                    <td><input type="text" name="unit_price[]" class="form-input money-input" value="0" inputmode="numeric" autocomplete="off"></td>
-                                    <td><button type="button" class="delete-btn" onclick="removeRow(this)">削除</button></td>
+                                    <th>品目</th>
+                                    <th>数量</th>
+                                    <th>単価</th>
+                                    <th>金額</th>
+                                    <th></th>
                                 </tr>
-                            <?php else: ?>
-                                <?php foreach ($items as $item): ?>
+                            </thead>
+                            <tbody id="items-body">
+                                <?php if (empty($items)): ?>
+                                    <!-- 明細が無い場合は空行を1つ用意 -->
                                     <tr>
-                                        <td><input type="text" name="item_name[]" class="form-input" value="<?= h($item['item_name']) ?>"></td>
-                                        <td><input type="number" name="quantity[]" class="form-input" value="<?= h($item['quantity']) ?>"></td>
-                                        <td><input type="text" name="unit_price[]" class="form-input money-input" value="<?= h(number_format($item['unit_price'])) ?>" inputmode="numeric" autocomplete="off"></td>
-                                        <td><button type="button" class="delete-btn" onclick="removeRow(this)">削除</button></td>
+                                        <td><input type="text" name="item_name[]" class="form-input"></td>
+                                        <td><input type="number" name="quantity[]" class="form-input" value="1"></td>
+                                        <td><input type="text" name="unit_price[]" class="form-input money-input" value="0" inputmode="numeric" autocomplete="off"></td>
+                                        <td class="item-amount">0 円</td>
+                                        <td><button type="button" class="delete-btn delete-btn--icon" onclick="removeRow(this)" title="削除" aria-label="削除"><i class="fa-solid fa-trash"></i></button></td>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                    <button type="button" class="submit-btn" onclick="addRow()">＋ 明細行を追加</button>
+                                <?php else: ?>
+                                    <?php foreach ($items as $item): ?>
+                                        <tr>
+                                            <td><input type="text" name="item_name[]" class="form-input" value="<?= h($item['item_name']) ?>"></td>
+                                            <td><input type="number" name="quantity[]" class="form-input" value="<?= h($item['quantity']) ?>"></td>
+                                            <td><input type="text" name="unit_price[]" class="form-input money-input" value="<?= h(number_format($item['unit_price'])) ?>" inputmode="numeric" autocomplete="off"></td>
+                                            <td class="item-amount"><?= h(number_format($item['quantity'] * $item['unit_price'])) ?> 円</td>
+                                            <td><button type="button" class="delete-btn delete-btn--icon" onclick="removeRow(this)" title="削除" aria-label="削除"><i class="fa-solid fa-trash"></i></button></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                        <button type="button" class="submit-btn" onclick="addRow()">＋ 明細行を追加</button>
 
-                    <input type="hidden" name="id" value="<?= h($invoice['id']) ?>">
-                </form>
-
-                <div class="form-actions">
-                    <button type="submit" form="edit-form" class="submit-btn">決定</button>
-
-                    <form method="post" action="invoice_delete.php" onsubmit="return confirm('削除しますか？');">
                         <input type="hidden" name="id" value="<?= h($invoice['id']) ?>">
-                        <button type="submit" class="delete-btn">削除</button>
                     </form>
 
-                    <a href="invoices_list.php" class="back-btn">戻る</a>
-                </div>
-            </div>
+                    <div class="form-actions">
+                        <button type="submit" form="edit-form" class="submit-btn">決定</button>
 
-            <div class="tab-panel" data-tab-panel="preview" hidden>
-                <div class="invoice-sheet">
-                    <div class="invoice-sheet__head">
-                        <h2 class="invoice-sheet__title">請求書</h2>
-                        <span class="status-badge status-<?= h($invoice['status']) ?>"><?= h($statusLabels[$invoice['status']]) ?></span>
+                        <form method="post" action="invoice_delete.php" onsubmit="return confirm('削除しますか？');">
+                            <input type="hidden" name="id" value="<?= h($invoice['id']) ?>">
+                            <button type="submit" class="delete-btn">削除</button>
+                        </form>
+
+                        <a href="invoices_list.php" class="back-btn">戻る</a>
                     </div>
+                </div>
 
-                    <div class="invoice-sheet__meta">
-                        <div class="invoice-sheet__client">
-                            <p class="invoice-sheet__client-name"><?php
-                                                                    foreach ($clients as $client) {
-                                                                        if ($client['id'] == $invoice['client_id']) {
-                                                                            echo h($client['name']);
-                                                                            break;
-                                                                        }
-                                                                    }
-                                                                    ?> 御中</p>
-                            <?php if (!empty($invoice['title'])): ?>
-                                <p class="invoice-sheet__subject">件名：<?= h($invoice['title']) ?></p>
-                            <?php endif; ?>
+                <aside class="edit-layout__preview no-print">
+                    <div class="preview-panel">
+                        <div class="preview-panel__head">
+                            <span class="preview-panel__label">プレビュー</span>
+
                         </div>
-                        <table class="invoice-sheet__info">
-                            <tr>
-                                <th>請求書番号</th>
-                                <td><?= h($invoice['invoice_number']) ?></td>
-                            </tr>
-                            <tr>
-                                <th>発行日</th>
-                                <td><?= h($invoice['issue_date']) ?></td>
-                            </tr>
-                            <tr>
-                                <th>支払期限</th>
-                                <td><?= h($invoice['due_date']) ?></td>
-                            </tr>
-                        </table>
+
+                        <div class="preview-mini">
+                            <div class="preview-mini__scale">
+                                <div class="invoice-sheet">
+                                    <div class="invoice-sheet__head">
+                                        <h2 class="invoice-sheet__title">請求書</h2>
+                                        <span class="status-badge status-<?= h($invoice['status']) ?>"><?= h($statusLabels[$invoice['status']]) ?></span>
+                                    </div>
+
+                                    <div class="invoice-sheet__meta">
+                                        <div class="invoice-sheet__client">
+                                            <p class="invoice-sheet__client-name"><?php
+                                                                                    foreach ($clients as $client) {
+                                                                                        if ($client['id'] == $invoice['client_id']) {
+                                                                                            echo h($client['name']);
+                                                                                            break;
+                                                                                        }
+                                                                                    }
+                                                                                    ?> 御中</p>
+                                            <?php if (!empty($invoice['title'])): ?>
+                                                <p class="invoice-sheet__subject">件名：<?= h($invoice['title']) ?></p>
+                                            <?php endif; ?>
+                                        </div>
+                                        <table class="invoice-sheet__info">
+                                            <tr>
+                                                <th>請求書番号</th>
+                                                <td><?= h($invoice['invoice_number']) ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th>発行日</th>
+                                                <td><?= h($invoice['issue_date']) ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th>支払期限</th>
+                                                <td><?= h($invoice['due_date']) ?></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="invoice-sheet__company">
+                                        <p><?= h($company['name']) ?></p>
+                                        <p>〒<?= h($company['zip']) ?> <?= h($company['address']) ?></p>
+                                        <p>TEL: <?= h($company['tel']) ?> / <?= h($company['email']) ?></p>
+                                    </div>
+
+                                    <table class="invoice-sheet__items">
+                                        <thead>
+                                            <tr>
+                                                <th>品目</th>
+                                                <th>数量</th>
+                                                <th>単価</th>
+                                                <th>金額</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($items as $item): ?>
+                                                <tr>
+                                                    <td><?= h($item['item_name']) ?></td>
+                                                    <td><?= h($item['quantity']) ?></td>
+                                                    <td><?= h(number_format($item['unit_price'])) ?> 円</td>
+                                                    <td><?= h(number_format($item['quantity'] * $item['unit_price'])) ?> 円</td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+
+                                    <table class="invoice-sheet__summary">
+                                        <tr>
+                                            <th>小計</th>
+                                            <td><?= h(number_format($previewSubtotal)) ?> 円</td>
+                                        </tr>
+                                        <tr>
+                                            <th>消費税（<?= h($invoice['tax_rate']) ?>%）</th>
+                                            <td><?= h(number_format($previewTax)) ?> 円</td>
+                                        </tr>
+                                        <tr class="net">
+                                            <th>合計</th>
+                                            <td><?= h(number_format($previewTotal)) ?> 円</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="invoice_preview.php?id=<?= h($invoice['id']) ?>" class="btn-primary preview-panel__print" target="_blank">
+                            <i class="fa-solid fa-print"></i> 印刷 / PDF保存
+                        </a>
                     </div>
-
-                    <div class="invoice-sheet__company">
-                        <p><?= h($company['name']) ?></p>
-                        <p>〒<?= h($company['zip']) ?> <?= h($company['address']) ?></p>
-                        <p>TEL: <?= h($company['tel']) ?> / <?= h($company['email']) ?></p>
-                    </div>
-
-                    <table class="invoice-sheet__items">
-                        <thead>
-                            <tr>
-                                <th>品目</th>
-                                <th>数量</th>
-                                <th>単価</th>
-                                <th>金額</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($items as $item): ?>
-                                <tr>
-                                    <td><?= h($item['item_name']) ?></td>
-                                    <td><?= h($item['quantity']) ?></td>
-                                    <td><?= h(number_format($item['unit_price'])) ?> 円</td>
-                                    <td><?= h(number_format($item['quantity'] * $item['unit_price'])) ?> 円</td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-
-                    <table class="invoice-sheet__summary">
-                        <tr>
-                            <th>小計</th>
-                            <td><?= h(number_format($previewSubtotal)) ?> 円</td>
-                        </tr>
-                        <tr>
-                            <th>消費税（<?= h($invoice['tax_rate']) ?>%）</th>
-                            <td><?= h(number_format($previewTax)) ?> 円</td>
-                        </tr>
-                        <tr class="net">
-                            <th>合計</th>
-                            <td><?= h(number_format($previewTotal)) ?> 円</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="form-actions">
-                    <a href="invoice_preview.php?id=<?= h($invoice['id']) ?>" class="btn-primary" target="_blank">
-                        <i class="fa-solid fa-print"></i> 印刷 / PDF保存
-                    </a>
-                </div>
+                </aside>
             </div>
         </div>
     </div>
 
     <script src="js/invoice-items.js"></script>
-    <script src="js/tabs.js"></script>
     <script src="js/money-input.js"></script>
+    <script src="js/item-amount.js"></script>
+    <script src="js/preview-mini.js"></script>
 </body>
 
 </html>

@@ -5,15 +5,16 @@
    ========================================================================== */
 
 :root {
-  --color-navy-900: #0f172a;
+  --color-navy-900: #1a2332;
   --color-navy-800: #1e293b;
   --color-navy-700: #334155;
 
-  --color-blue-600: #2563eb;
-  --color-blue-700: #1d4ed8;
-  --color-blue-100: #dbeafe;
+  /* アクセントカラー（Gentelella風のエメラルドグリーン） */
+  --color-blue-600: #1abb9c;
+  --color-blue-700: #059669;
+  --color-blue-100: #d1fae5;
 
-  --color-bg: #f1f5f9;
+  --color-bg: #f6f7fb;
   --color-surface: #ffffff;
   --color-border: #e2e8f0;
 
@@ -21,14 +22,19 @@
   --color-text-muted: #64748b;
   --color-text-subtle: #94a3b8;
 
-  --color-danger: #dc2626;
-  --color-danger-bg: #fee2e2;
-  --color-danger-bg-hover: #fecaca;
+  /* ステータス配色（Gentelella general_elements.html のトークンに準拠） */
+  --color-danger: #d63939;
+  --color-danger-bg: #f8dfdf;
+  --color-danger-bg-hover: #f5cece;
 
-  --color-success-bg: #dcfce7;
-  --color-success-text: #15803d;
+  --color-success-bg: #def1e1;
+  --color-success-text: #2fb344;
   --color-warning-bg: #fff4e0;
   --color-warning-text: #b45309;
+
+  /* 「送付済み」バッジ専用（アクセントカラーの緑と混同しないよう青のまま独立させる） */
+  --color-info-bg: #d2e5f7;
+  --color-info-text: #066fd1;
 
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -119,7 +125,7 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--color-blue-600);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 
 /* ログイン画面（サイドバーを持たない唯一のページ）をカード風に中央配置 */
@@ -349,43 +355,90 @@ body:has(.sidebar) {
 }
 
 /* ==========================================================================
-   タブ（invoice_edit.php の 編集/プレビュー 切り替え）
+   請求書編集画面の2カラムレイアウト（invoice_edit.php）
+   左: 編集フォーム / 右: 小さいプレビュー
    ========================================================================== */
 
-.tabs {
+.edit-layout {
   display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--color-border);
-  margin-bottom: 24px;
+  align-items: flex-start;
+  gap: 32px;
 }
 
-.tab-btn {
-  background: transparent;
-  border: none;
-  padding: 10px 18px;
-  margin-bottom: -1px;
-  font-size: 0.9rem;
-  font-weight: 600;
+.edit-layout__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.edit-layout__preview {
+  width: 280px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 24px;
+}
+
+.preview-panel__head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.preview-panel__label {
+  font-size: 0.78rem;
+  font-weight: 700;
   color: var(--color-text-muted);
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
-.tab-btn:hover {
-  color: var(--color-text);
+.preview-panel__print {
+  justify-content: center;
+  width: 100%;
 }
 
-.tab-btn.is-active {
-  color: var(--color-blue-600);
-  border-bottom-color: var(--color-blue-600);
+/* 実寸(A4)のinvoice-sheetをJSで算出したscaleで縮小表示する。
+   枠自体をA4の縦横比(210:297)に固定し、中身はその枠にあわせて配置する */
+.preview-mini {
+  width: 100%;
+  aspect-ratio: 210 / 297;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
 }
 
-/* card内にネストするプレビューはcard自体の余白を使うのでフラットにする */
-.card .invoice-sheet {
+.preview-mini__scale {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* A4 210mm×297mm を 96dpi換算したピクセルサイズ */
+  width: 794px;
+  height: 1123px;
+  transform-origin: top left;
+}
+
+.preview-mini .invoice-sheet {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   border: none;
   box-shadow: none;
-  padding: 0;
+  padding: 32px;
   max-width: none;
+}
+
+@media (max-width: 900px) {
+  .edit-layout {
+    flex-direction: column;
+  }
+
+  .edit-layout__preview {
+    width: 100%;
+    position: static;
+  }
 }
 
 .error-message {
@@ -469,7 +522,7 @@ body:has(.sidebar) {
 .form-input:focus {
   outline: none;
   border-color: var(--color-blue-600);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 
 .form-actions {
@@ -479,6 +532,11 @@ body:has(.sidebar) {
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid var(--color-border);
+}
+
+/* 「戻る」は破壊的な操作ではないため右側に離し、決定・削除と視覚的に区別する */
+.form-actions .back-btn {
+  margin-left: auto;
 }
 
 /* ==========================================================================
@@ -534,20 +592,30 @@ body:has(.sidebar) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
-  border: none;
-  padding: 9px 16px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  padding: 10px 18px;
   border-radius: var(--radius-sm);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .delete-btn:hover {
-  background: var(--color-danger-bg-hover);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-color: var(--color-danger-bg-hover);
+}
+
+/* アイコンのみの削除ボタン（正方形に近づける） */
+.delete-btn--icon {
+  padding: 9px;
 }
 
 /* ==========================================================================
@@ -583,7 +651,7 @@ body:has(.sidebar) {
   background: var(--color-blue-600);
   color: #fff;
   border: none;
-  padding: 9px 18px;
+  padding: 10px 18px;
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
   font-weight: 600;
@@ -694,6 +762,12 @@ body:has(.sidebar) {
   margin-top: 0;
 }
 
+.item-amount {
+  text-align: right;
+  white-space: nowrap;
+  color: var(--color-text-muted);
+}
+
 /* ==========================================================================
    ステータスバッジ
    ========================================================================== */
@@ -713,8 +787,8 @@ body:has(.sidebar) {
 }
 
 .status-sent {
-  background: var(--color-blue-100);
-  color: var(--color-blue-700);
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
 }
 
 .status-paid {
@@ -739,7 +813,10 @@ body:has(.sidebar) {
 }
 
 .invoice-sheet {
-  max-width: 760px;
+  width: 210mm;
+  min-height: 297mm;
+  max-width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -748,6 +825,13 @@ body:has(.sidebar) {
   padding: 48px;
   color: #333;
   line-height: 1.7;
+}
+
+@media (max-width: 850px) {
+  .invoice-sheet {
+    width: 100%;
+    min-height: 0;
+  }
 }
 
 .invoice-sheet__head {
@@ -890,6 +974,7 @@ body:has(.sidebar) {
   }
 
   @page {
+    size: A4;
     margin: 18mm;
   }
 }
