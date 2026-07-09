@@ -1,4 +1,4 @@
-![screenShot](screenshot.webp)
+![screenShot](screenshot_v2.webp)
 
 # ①課題名
 
