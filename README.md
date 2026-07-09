@@ -20,8 +20,8 @@
 ## ⑤工夫した点・こだわった点
 
 - DB接続情報は `.env` に切り出し、`config/env.php` で読み込む形にすることで、`config/db.php` に認証情報をハードコードせず、`.gitignore` でリポジトリにも含まれないようにしました。
-- `beans`（生豆銘柄）・`customers`（顧客）、`invoices`（請求書）・`invoice_items`（明細）・`stock_movements`（入出荷記録）をリレーション設計しました。削除時の挙動は関係性ごとに使い分けており、`invoices ↔ invoice_items` と `beans ↔ stock_movements` は `ON DELETE CASCADE`（親を削除すると子も自動削除）、`customers ↔ invoices` は `NO ACTION`（請求書が紐づく顧客は削除不可）、`customers ↔ stock_movements` は `ON DELETE SET NULL`（顧客が消えても入出荷記録は「顧客未設定」として残る）としています。
-- 顧客削除時に請求書が紐づいていて外部キー制約違反が起きた場合、PHPの生のエラー画面を見せるのではなく `try-catch` で捕まえ、「この顧客には請求書が紐づいているため削除できません」というメッセージを表示するようにしました。
+- `beans`（生豆銘柄）・`customers`（顧客）・`invoices`（請求書）・`invoice_items`（明細）・`stock_movements`（入出荷記録）をリレーション設計しました。
+- 削除時の挙動は関係性ごとに使い分けており、`invoices ↔ invoice_items` と `beans ↔ stock_movements` は `ON DELETE CASCADE`（親を削除すると子も自動削除）、`customers ↔ invoices` は `NO ACTION`（請求書が紐づく顧客は削除不可）、`customers ↔ stock_movements` は `ON DELETE SET NULL`（顧客が消えても入出荷記録は「顧客未設定」として残る）としています。
 - 生豆の商品名・仕入先の入力欄はHTML標準の `<datalist>` を使い、既存の登録データを候補として出しつつ自由入力もできるようにしました（新しい銘柄も既存銘柄への追記もどちらもスムーズに行えます）。
 
 ## ⑥難しかった点・次回トライしたいこと（又は機能）
