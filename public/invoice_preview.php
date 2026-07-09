@@ -5,9 +5,9 @@ require_once '../config/func.php';
 
 $id = $_GET['id'] ?? null;
 
-$sql = 'SELECT invoices.*, clients.name AS client_name
+$sql = 'SELECT invoices.*, customers.name AS customer_name
         FROM invoices
-        JOIN clients ON invoices.client_id = clients.id
+        JOIN customers ON invoices.customer_id = customers.id
         WHERE invoices.id = :id';
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':id', $id, PDO::PARAM_INT);
@@ -68,8 +68,8 @@ $company = companyInfo();
             </div>
 
             <div class="invoice-sheet__meta">
-                <div class="invoice-sheet__client">
-                    <p class="invoice-sheet__client-name"><?= h($invoice['client_name']) ?> 御中</p>
+                <div class="invoice-sheet__customer">
+                    <p class="invoice-sheet__customer-name"><?= h($invoice['customer_name']) ?> 御中</p>
                     <?php if (!empty($invoice['title'])): ?>
                         <p class="invoice-sheet__subject">件名：<?= h($invoice['title']) ?></p>
                     <?php endif; ?>

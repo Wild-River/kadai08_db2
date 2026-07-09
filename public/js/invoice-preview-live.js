@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('new-form');
     const els = {
-        clientName: document.getElementById('preview-client-name'),
+        customerName: document.getElementById('preview-customer-name'),
         subject: document.getElementById('preview-subject'),
         invoiceNumber: document.getElementById('preview-invoice-number'),
         issueDate: document.getElementById('preview-issue-date'),
@@ -14,17 +14,17 @@ document.addEventListener('DOMContentLoaded', () => {
         tax: document.getElementById('preview-tax'),
         total: document.getElementById('preview-total'),
     };
-    if (!form || !els.clientName) return;
+    if (!form || !els.customerName) return;
 
-    const clients = typeof PREVIEW_CLIENTS !== 'undefined' ? PREVIEW_CLIENTS : [];
+    const customers = typeof PREVIEW_CUSTOMERS !== 'undefined' ? PREVIEW_CUSTOMERS : [];
     const statusLabels = typeof PREVIEW_STATUS_LABELS !== 'undefined' ? PREVIEW_STATUS_LABELS : {};
 
     const yen = (n) => Math.round(n).toLocaleString('ja-JP') + ' 円';
 
     const update = () => {
-        const clientId = form.querySelector('[name="client_id"]').value;
-        const client = clients.find((c) => String(c.id) === String(clientId));
-        els.clientName.textContent = (client ? client.name : 'クライアント未選択') + ' 御中';
+        const customerId = form.querySelector('[name="customer_id"]').value;
+        const customer = customers.find((c) => String(c.id) === String(customerId));
+        els.customerName.textContent = (customer ? customer.name : '顧客未選択') + ' 御中';
 
         const title = form.querySelector('[name="title"]').value.trim();
         els.subject.hidden = title === '';

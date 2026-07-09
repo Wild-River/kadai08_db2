@@ -21,6 +21,18 @@ require_once '../config/func.php';
         <p><?= h($_SESSION['username']) ?> さん、ようこそ</p>
 
         <div class="card-grid">
+            <a href="bean_list.php" class="menu-card">
+                <i class="fa-solid fa-seedling"></i>
+                <span>生豆在庫管理</span>
+            </a>
+            <a href="movement_list.php" class="menu-card">
+                <i class="fa-solid fa-truck-ramp-box"></i>
+                <span>入出荷記録</span>
+            </a>
+            <a href="customer_list.php" class="menu-card">
+                <i class="fa-solid fa-users"></i>
+                <span>顧客管理</span>
+            </a>
             <a href="invoices_list.php" class="menu-card">
                 <i class="fa-solid fa-file-invoice"></i>
                 <span>請求書一覧</span>
@@ -28,10 +40,6 @@ require_once '../config/func.php';
             <a href="invoice_new.php" class="menu-card">
                 <i class="fa-solid fa-plus"></i>
                 <span>請求書作成</span>
-            </a>
-            <a href="clients_list.php" class="menu-card">
-                <i class="fa-solid fa-users"></i>
-                <span>クライアント管理</span>
             </a>
         </div>
     </div>

@@ -14,16 +14,16 @@ $sql = "SELECT
             invoices.issue_date,
             invoices.due_date,
             invoices.tax_rate,
-            clients.name AS client_name,
+            customers.name AS customer_name,
             -- COALESCEは「NULLだったら代わりに0を使う」
             COALESCE(SUM(invoice_items.quantity * invoice_items.unit_price), 0) AS subtotal
         FROM invoices
-        JOIN clients ON invoices.client_id = clients.id
+        JOIN customers ON invoices.customer_id = customers.id
         LEFT JOIN invoice_items ON invoices.id = invoice_items.invoice_id";
 
 $conditions = [];
 if ($keyword !== '') {
-    $conditions[] = "(invoices.invoice_number LIKE :keyword1 OR clients.name LIKE :keyword2)";
+    $conditions[] = "(invoices.invoice_number LIKE :keyword1 OR customers.name LIKE :keyword2)";
 }
 if ($statusFilter !== '') {
     $conditions[] = "invoices.status = :status";
@@ -34,7 +34,7 @@ if ($conditions) {
 
 $sortableColumns = [
     'invoice_number' => 'invoices.invoice_number',
-    'client_name'    => 'clients.name',
+    'customer_name'  => 'customers.name',
     'status'         => 'invoices.status',
     'issue_date'     => 'invoices.issue_date',
     'due_date'       => 'invoices.due_date',
@@ -48,7 +48,7 @@ if (!array_key_exists($sortKey, $sortableColumns)) {
 $order = (($_GET['order'] ?? 'desc') === 'asc') ? 'ASC' : 'DESC';
 
 $sql .= " GROUP BY invoices.id, invoices.invoice_number, invoices.status,
-                   invoices.issue_date, invoices.due_date, invoices.tax_rate, clients.name
+                   invoices.issue_date, invoices.due_date, invoices.tax_rate, customers.name
         ORDER BY {$sortableColumns[$sortKey]} {$order}";
 
 $stmt = $pdo->prepare($sql);
@@ -82,11 +82,11 @@ $statusLabels = statusLabels();
     <div class="container">
         <div class="page-head">
             <h1>請求書一覧</h1>
-            <a href="invoice_new.php" class="btn-primary">+ 新規作成</a>
+            <a href="invoice_new.php" class="btn-primary">+ 新規登録</a>
         </div>
 
         <form method="get" action="" class="search-form">
-            <input type="text" name="keyword" value="<?= h($keyword) ?>" placeholder="請求書番号・クライアント名で検索" autocomplete="off">
+            <input type="text" name="keyword" value="<?= h($keyword) ?>" placeholder="請求書番号・顧客名で検索" autocomplete="off">
             <select name="status">
                 <option value="">すべてのステータス</option>
                 <?php foreach ($statusLabels as $key => $label): ?>
@@ -102,7 +102,7 @@ $statusLabels = statusLabels();
                 <thead>
                     <tr>
                         <th><?= sortLink('請求書番号', 'invoice_number', $sortKey, $order, $keyword) ?></th>
-                        <th><?= sortLink('クライアント', 'client_name', $sortKey, $order, $keyword) ?></th>
+                        <th><?= sortLink('顧客', 'customer_name', $sortKey, $order, $keyword) ?></th>
                         <th><?= sortLink('ステータス', 'status', $sortKey, $order, $keyword) ?></th>
                         <th><?= sortLink('発行日', 'issue_date', $sortKey, $order, $keyword) ?></th>
                         <th><?= sortLink('支払期限', 'due_date', $sortKey, $order, $keyword) ?></th>
@@ -116,7 +116,7 @@ $statusLabels = statusLabels();
                     ?>
                         <tr class="row-link" data-href="invoice_edit.php?id=<?= h($invoice['id']) ?>">
                             <td><?= h($invoice['invoice_number']) ?></td>
-                            <td><?= h($invoice['client_name']) ?></td>
+                            <td><?= h($invoice['customer_name']) ?></td>
                             <td><span class="status-badge status-<?= h($invoice['status']) ?>"><?= h($statusLabels[$invoice['status']]) ?></span></td>
                             <td><?= h($invoice['issue_date']) ?></td>
                             <td><?= h($invoice['due_date']) ?></td>

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -S /Applications/MAMP/tmp/mysql/mysql.sock bean_trade -e 'SELECT id, name, company, email FROM customers ORDER BY id;')",
+      "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -S /Applications/MAMP/tmp/mysql/mysql.sock bean_trade)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -r ' *)",
+      "Bash(grep -v \"^--$\")",
+      "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -S /Applications/MAMP/tmp/mysql/mysql.sock bean_trade -e ' *)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -l /Applications/MAMP/htdocs/kadai08_db2/public/customer_delete.php)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -l /Applications/MAMP/htdocs/kadai08_db2/public/customer_edit.php)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -l /Applications/MAMP/htdocs/kadai08_db2/public/bean_new.php)"
+    ]
+  }
+}

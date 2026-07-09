@@ -1,7 +1,7 @@
 <?php
 function h($value)
 {
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
 }
 
 function sql_error($stmt)
@@ -38,6 +38,15 @@ function statusLabels()
         'sent'    => '送付済み',
         'paid'    => '入金済み',
         'overdue' => '期限超過',
+    ];
+}
+
+function typeLabels()
+{
+    return [
+        'in'      => '入荷',
+        'reserve' => '予約',
+        'out'     => '販売',
     ];
 }
 

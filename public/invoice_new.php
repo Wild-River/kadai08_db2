@@ -3,15 +3,15 @@ require_once '../config/auth.php';
 require_once '../config/db.php';
 require_once '../config/func.php';
 
-// クライアント選択用のプルダウンに使うため、全クライアントを取得
-$stmt = $pdo->query("SELECT id, name FROM clients ORDER BY name");
-$clients = $stmt->fetchAll();
+// 顧客選択用のプルダウンに使うため、全顧客を取得
+$stmt = $pdo->query("SELECT id, name FROM customers ORDER BY name");
+$customers = $stmt->fetchAll();
 
 $statusLabels = statusLabels();
 $company = companyInfo();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $client_id = $_POST['client_id'];
+    $customer_id = $_POST['customer_id'];
     $invoice_number = $_POST['invoice_number'];
     $title = $_POST['title'];
     $status = $_POST['status'];
@@ -24,10 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo->beginTransaction();
     try {
         // 請求書本体をINSERT
-        $sql = 'INSERT INTO invoices (client_id, invoice_number, title, status, issue_date, due_date, tax_rate)
-                VALUES (:client_id, :invoice_number, :title, :status, :issue_date, :due_date, :tax_rate)';
+        $sql = 'INSERT INTO invoices (customer_id, invoice_number, title, status, issue_date, due_date, tax_rate)
+                VALUES (:customer_id, :invoice_number, :title, :status, :issue_date, :due_date, :tax_rate)';
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+        $stmt->bindValue(':customer_id', $customer_id, PDO::PARAM_INT);
         $stmt->bindValue(':invoice_number', $invoice_number, PDO::PARAM_STR);
         $stmt->bindValue(':title', $title, PDO::PARAM_STR);
         $stmt->bindValue(':status', $status, PDO::PARAM_STR);
@@ -96,11 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="edit-layout__main">
                     <form method="post" action="./invoice_new.php" id="new-form">
                         <div class="form-group">
-                            <label class="form-label">クライアント
-                                <select name="client_id" class="form-input" required>
+                            <label class="form-label">顧客
+                                <select name="customer_id" class="form-input" required>
                                     <option value="">選択してください</option>
-                                    <?php foreach ($clients as $client): ?>
-                                        <option value="<?= h($client['id']) ?>"><?= h($client['name']) ?></option>
+                                    <?php foreach ($customers as $customer): ?>
+                                        <option value="<?= h($customer['id']) ?>"><?= h($customer['name']) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </label>
@@ -169,11 +169,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </tbody>
                         </table>
                         <button type="button" class="submit-btn" onclick="addRow()">＋ 明細行を追加</button>
-
-                        <div class="form-actions">
-                            <button type="submit" class="submit-btn">保存</button>
-                            <a href="invoices_list.php" class="back-btn">戻る</a>
-                        </div>
                     </form>
                 </div>
 
@@ -192,8 +187,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
 
                                     <div class="invoice-sheet__meta">
-                                        <div class="invoice-sheet__client">
-                                            <p class="invoice-sheet__client-name" id="preview-client-name">クライアント未選択 御中</p>
+                                        <div class="invoice-sheet__customer">
+                                            <p class="invoice-sheet__customer-name" id="preview-customer-name">顧客未選択 御中</p>
                                             <p class="invoice-sheet__subject" id="preview-subject" hidden></p>
                                         </div>
                                         <table class="invoice-sheet__info">
@@ -250,11 +245,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </aside>
             </div>
+
+            <div class="form-actions">
+                <button type="submit" form="new-form" class="submit-btn">保存</button>
+                <a href="invoices_list.php" class="back-btn">戻る</a>
+            </div>
         </div>
     </div>
 
     <script>
-        const PREVIEW_CLIENTS = <?= json_encode($clients, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+        const PREVIEW_CUSTOMERS = <?= json_encode($customers, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
         const PREVIEW_STATUS_LABELS = <?= json_encode($statusLabels, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
     </script>
     <script src="js/invoice-items.js"></script>

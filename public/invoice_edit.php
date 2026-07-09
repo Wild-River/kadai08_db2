@@ -5,9 +5,9 @@ require_once '../config/func.php';
 
 $statusLabels = statusLabels();
 
-// クライアント選択用に全クライアント取得
-$clientStmt = $pdo->query("SELECT id, name FROM clients ORDER BY name");
-$clients = $clientStmt->fetchAll();
+// 顧客選択用に全顧客取得
+$customerstmt = $pdo->query("SELECT id, name FROM customers ORDER BY name");
+$customers = $customerstmt->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $id = $_GET['id'];
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['id'];
-    $client_id = $_POST['client_id'];
+    $customer_id = $_POST['customer_id'];
     $invoice_number = $_POST['invoice_number'];
     $title = $_POST['title'];
     $status = $_POST['status'];
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // ①請求書本体をUPDATE
         $sql = 'UPDATE invoices SET
-                    client_id = :client_id,
+                    customer_id = :customer_id,
                     invoice_number = :invoice_number,
                     title = :title,
                     status = :status,
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     tax_rate = :tax_rate
                 WHERE id = :id';
         $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':client_id', $client_id, PDO::PARAM_INT);
+        $stmt->bindValue(':customer_id', $customer_id, PDO::PARAM_INT);
         $stmt->bindValue(':invoice_number', $invoice_number, PDO::PARAM_STR);
         $stmt->bindValue(':title', $title, PDO::PARAM_STR);
         $stmt->bindValue(':status', $status, PDO::PARAM_STR);
@@ -126,12 +126,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="edit-layout__main">
                     <form method="post" action="./invoice_edit.php" id="edit-form">
                         <div class="form-group">
-                            <label class="form-label">クライアント
-                                <select name="client_id" class="form-input" required>
+                            <label class="form-label">顧客
+                                <select name="customer_id" class="form-input" required>
                                     <option value="">選択してください</option>
-                                    <?php foreach ($clients as $client): ?>
-                                        <option value="<?= h($client['id']) ?>" <?= $invoice['client_id'] == $client['id'] ? 'selected' : '' ?>>
-                                            <?= h($client['name']) ?>
+                                    <?php foreach ($customers as $customer): ?>
+                                        <option value="<?= h($customer['id']) ?>" <?= $invoice['customer_id'] == $customer['id'] ? 'selected' : '' ?>>
+                                            <?= h($customer['name']) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -180,55 +180,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </label>
                         </div>
 
-                        <h2>明細</h2>
-                        <table id="items-table">
-                            <thead>
-                                <tr>
-                                    <th>品目</th>
-                                    <th>数量</th>
-                                    <th>単価</th>
-                                    <th>金額</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="items-body">
-                                <?php if (empty($items)): ?>
-                                    <!-- 明細が無い場合は空行を1つ用意 -->
-                                    <tr>
-                                        <td><input type="text" name="item_name[]" class="form-input"></td>
-                                        <td><input type="number" name="quantity[]" class="form-input" value="1"></td>
-                                        <td><input type="text" name="unit_price[]" class="form-input money-input" value="0" inputmode="numeric" autocomplete="off"></td>
-                                        <td class="item-amount">0 円</td>
-                                        <td><button type="button" class="delete-btn delete-btn--icon" onclick="removeRow(this)" title="削除" aria-label="削除"><i class="fa-solid fa-trash"></i></button></td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($items as $item): ?>
-                                        <tr>
-                                            <td><input type="text" name="item_name[]" class="form-input" value="<?= h($item['item_name']) ?>"></td>
-                                            <td><input type="number" name="quantity[]" class="form-input" value="<?= h($item['quantity']) ?>"></td>
-                                            <td><input type="text" name="unit_price[]" class="form-input money-input" value="<?= h(number_format($item['unit_price'])) ?>" inputmode="numeric" autocomplete="off"></td>
-                                            <td class="item-amount"><?= h(number_format($item['quantity'] * $item['unit_price'])) ?> 円</td>
-                                            <td><button type="button" class="delete-btn delete-btn--icon" onclick="removeRow(this)" title="削除" aria-label="削除"><i class="fa-solid fa-trash"></i></button></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                        <button type="button" class="submit-btn" onclick="addRow()">＋ 明細行を追加</button>
-
                         <input type="hidden" name="id" value="<?= h($invoice['id']) ?>">
                     </form>
-
-                    <div class="form-actions">
-                        <button type="submit" form="edit-form" class="submit-btn">決定</button>
-
-                        <form method="post" action="invoice_delete.php" onsubmit="return confirm('削除しますか？');">
-                            <input type="hidden" name="id" value="<?= h($invoice['id']) ?>">
-                            <button type="submit" class="delete-btn">削除</button>
-                        </form>
-
-                        <a href="invoices_list.php" class="back-btn">戻る</a>
-                    </div>
                 </div>
 
                 <aside class="edit-layout__preview no-print">
@@ -247,15 +200,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
 
                                     <div class="invoice-sheet__meta">
-                                        <div class="invoice-sheet__client">
-                                            <p class="invoice-sheet__client-name"><?php
-                                                                                    foreach ($clients as $client) {
-                                                                                        if ($client['id'] == $invoice['client_id']) {
-                                                                                            echo h($client['name']);
-                                                                                            break;
-                                                                                        }
-                                                                                    }
-                                                                                    ?> 御中</p>
+                                        <div class="invoice-sheet__customer">
+                                            <p class="invoice-sheet__customer-name">
+                                                <?php
+                                                foreach ($customers as $customer) {
+                                                    if ($customer['id'] == $invoice['customer_id']) {
+                                                        echo h($customer['name']);
+                                                        break;
+                                                    }
+                                                }
+                                                ?> 御中</p>
                                             <?php if (!empty($invoice['title'])): ?>
                                                 <p class="invoice-sheet__subject">件名：<?= h($invoice['title']) ?></p>
                                             <?php endif; ?>
@@ -326,6 +280,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                     </div>
                 </aside>
+            </div>
+
+            <div class="invoice-items-section">
+                <h2>明細</h2>
+                <table id="items-table" data-form="edit-form">
+                    <thead>
+                        <tr>
+                            <th>品目</th>
+                            <th>数量</th>
+                            <th>単価</th>
+                            <th>金額</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-body">
+                        <?php if (empty($items)): ?>
+                            <!-- 明細が無い場合は空行を1つ用意 -->
+                            <tr>
+                                <td><input form="edit-form" type="text" name="item_name[]" class="form-input"></td>
+                                <td><input form="edit-form" type="number" name="quantity[]" class="form-input" value="1"></td>
+                                <td><input form="edit-form" type="text" name="unit_price[]" class="form-input money-input" value="0" inputmode="numeric" autocomplete="off"></td>
+                                <td class="item-amount">0 円</td>
+                                <td><button type="button" class="delete-btn delete-btn--icon" onclick="removeRow(this)" title="削除" aria-label="削除"><i class="fa-solid fa-trash"></i></button></td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($items as $item): ?>
+                                <tr>
+                                    <td><input form="edit-form" type="text" name="item_name[]" class="form-input" value="<?= h($item['item_name']) ?>"></td>
+                                    <td><input form="edit-form" type="number" name="quantity[]" class="form-input" value="<?= h($item['quantity']) ?>"></td>
+                                    <td><input form="edit-form" type="text" name="unit_price[]" class="form-input money-input" value="<?= h(number_format($item['unit_price'])) ?>" inputmode="numeric" autocomplete="off"></td>
+                                    <td class="item-amount"><?= h(number_format($item['quantity'] * $item['unit_price'])) ?> 円</td>
+                                    <td><button type="button" class="delete-btn delete-btn--icon" onclick="removeRow(this)" title="削除" aria-label="削除"><i class="fa-solid fa-trash"></i></button></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+                <button type="button" form="edit-form" class="submit-btn" onclick="addRow()">＋ 明細行を追加</button>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" form="edit-form" class="submit-btn">決定</button>
+
+                <form method="post" action="invoice_delete.php" onsubmit="return confirm('削除しますか？');">
+                    <input type="hidden" name="id" value="<?= h($invoice['id']) ?>">
+                    <button type="submit" class="delete-btn">削除</button>
+                </form>
+
+                <a href="invoices_list.php" class="back-btn">戻る</a>
             </div>
         </div>
     </div>
