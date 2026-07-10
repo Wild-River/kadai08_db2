@@ -153,6 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="preview-panel">
                         <div class="preview-panel__head">
                             <span class="preview-panel__label">プレビュー</span>
+                            <span class="status-badge status-draft" id="preview-status-badge"><?= h(reset($statusLabels)) ?></span>
                         </div>
 
                         <div class="preview-mini">
@@ -160,7 +161,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="invoice-sheet">
                                     <div class="invoice-sheet__head">
                                         <h2 class="invoice-sheet__title">請求書</h2>
-                                        <span class="status-badge status-draft" id="preview-status-badge"><?= h(reset($statusLabels)) ?></span>
                                     </div>
 
                                     <div class="invoice-sheet__meta">

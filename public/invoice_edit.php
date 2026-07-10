@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="preview-panel">
                         <div class="preview-panel__head">
                             <span class="preview-panel__label">プレビュー</span>
-
+                            <span class="status-badge status-<?= h($invoice['status']) ?>" id="preview-status-badge"><?= h($statusLabels[$invoice['status']]) ?></span>
                         </div>
 
                         <div class="preview-mini">
@@ -197,12 +197,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="invoice-sheet">
                                     <div class="invoice-sheet__head">
                                         <h2 class="invoice-sheet__title">請求書</h2>
-                                        <span class="status-badge status-<?= h($invoice['status']) ?>"><?= h($statusLabels[$invoice['status']]) ?></span>
                                     </div>
 
                                     <div class="invoice-sheet__meta">
                                         <div class="invoice-sheet__customer">
-                                            <p class="invoice-sheet__customer-name">
+                                            <p class="invoice-sheet__customer-name" id="preview-customer-name">
                                                 <?php
                                                 foreach ($customers as $customer) {
                                                     if ($customer['id'] == $invoice['customer_id']) {
@@ -211,22 +210,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     }
                                                 }
                                                 ?> 御中</p>
-                                            <?php if (!empty($invoice['title'])): ?>
-                                                <p class="invoice-sheet__subject">件名：<?= h($invoice['title']) ?></p>
-                                            <?php endif; ?>
+                                            <p class="invoice-sheet__subject" id="preview-subject" <?= empty($invoice['title']) ? 'hidden' : '' ?>><?= empty($invoice['title']) ? '' : '件名：' . h($invoice['title']) ?></p>
                                         </div>
                                         <table class="invoice-sheet__info">
                                             <tr>
                                                 <th>請求書番号</th>
-                                                <td><?= h($invoice['invoice_number']) ?></td>
+                                                <td id="preview-invoice-number"><?= h($invoice['invoice_number']) ?></td>
                                             </tr>
                                             <tr>
                                                 <th>発行日</th>
-                                                <td><?= h($invoice['issue_date']) ?></td>
+                                                <td id="preview-issue-date"><?= h($invoice['issue_date']) ?></td>
                                             </tr>
                                             <tr>
                                                 <th>支払期限</th>
-                                                <td><?= h($invoice['due_date']) ?></td>
+                                                <td id="preview-due-date"><?= h($invoice['due_date']) ?></td>
                                             </tr>
                                         </table>
                                     </div>
@@ -246,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <th>金額</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="preview-items-body">
                                             <?php foreach ($items as $item): ?>
                                                 <tr>
                                                     <td><?= h($item['item_name']) ?></td>
@@ -261,15 +258,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <table class="invoice-sheet__summary">
                                         <tr>
                                             <th>小計</th>
-                                            <td><?= h(number_format($previewSubtotal)) ?> 円</td>
+                                            <td id="preview-subtotal"><?= h(number_format($previewSubtotal)) ?> 円</td>
                                         </tr>
                                         <tr>
-                                            <th>消費税（<?= h($invoice['tax_rate']) ?>%）</th>
-                                            <td><?= h(number_format($previewTax)) ?> 円</td>
+                                            <th id="preview-tax-label">消費税（<?= h($invoice['tax_rate']) ?>%）</th>
+                                            <td id="preview-tax"><?= h(number_format($previewTax)) ?> 円</td>
                                         </tr>
                                         <tr class="net">
                                             <th>合計</th>
-                                            <td><?= h(number_format($previewTotal)) ?> 円</td>
+                                            <td id="preview-total"><?= h(number_format($previewTotal)) ?> 円</td>
                                         </tr>
                                     </table>
                                 </div>
@@ -324,6 +321,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php endforeach; ?>
                 </datalist>
                 <button type="button" form="edit-form" class="submit-btn" onclick="addRow()">＋ 明細行を追加</button>
+
+                <table class="invoice-sheet__summary">
+                    <tr>
+                        <th>小計</th>
+                        <td id="form-subtotal"><?= h(number_format($previewSubtotal)) ?> 円</td>
+                    </tr>
+                    <tr>
+                        <th id="form-tax-label">消費税（<?= h($invoice['tax_rate']) ?>%）</th>
+                        <td id="form-tax"><?= h(number_format($previewTax)) ?> 円</td>
+                    </tr>
+                    <tr class="net">
+                        <th>合計</th>
+                        <td id="form-total"><?= h(number_format($previewTotal)) ?> 円</td>
+                    </tr>
+                </table>
             </div>
 
             <div class="form-actions">
@@ -339,9 +351,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
+    <script>
+        const PREVIEW_CUSTOMERS = <?= json_encode($customers, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+        const PREVIEW_STATUS_LABELS = <?= json_encode($statusLabels, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+    </script>
     <script src="js/invoice-items.js"></script>
     <script src="js/money-input.js"></script>
     <script src="js/item-amount.js"></script>
+    <script src="js/invoice-preview-live.js"></script>
     <script src="js/preview-mini.js"></script>
 </body>
 

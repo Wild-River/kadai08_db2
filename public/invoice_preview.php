@@ -32,7 +32,6 @@ foreach ($items as $item) {
 $tax = round($subtotal * ($invoice['tax_rate'] / 100));
 $total = $subtotal + $tax;
 
-$statusLabels = statusLabels();
 $company = companyInfo();
 ?>
 
@@ -61,7 +60,6 @@ $company = companyInfo();
         <div class="invoice-sheet">
             <div class="invoice-sheet__head">
                 <h2 class="invoice-sheet__title">請求書</h2>
-                <span class="status-badge status-<?= h($invoice['status']) ?> no-print"><?= h($statusLabels[$invoice['status']]) ?></span>
             </div>
 
             <div class="invoice-sheet__meta">

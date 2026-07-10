@@ -1,6 +1,6 @@
-// 請求書作成画面: フォームの入力内容をリアルタイムで右側のミニプレビューに反映する
+// 請求書作成・編集画面: フォームの入力内容をリアルタイムで右側のミニプレビュー（と、あれば編集画面側の合計欄）に反映する
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('new-form');
+    const form = document.getElementById('new-form') || document.getElementById('edit-form');
     const els = {
         customerName: document.getElementById('preview-customer-name'),
         subject: document.getElementById('preview-subject'),
@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
         taxLabel: document.getElementById('preview-tax-label'),
         tax: document.getElementById('preview-tax'),
         total: document.getElementById('preview-total'),
+        // 編集画面のフォーム側にも合計欄がある場合はそちらも更新する（無ければ無視）
+        formSubtotal: document.getElementById('form-subtotal'),
+        formTaxLabel: document.getElementById('form-tax-label'),
+        formTax: document.getElementById('form-tax'),
+        formTotal: document.getElementById('form-total'),
     };
     if (!form || !els.customerName) return;
 
@@ -67,6 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
         els.taxLabel.textContent = `消費税（${taxRate}%）`;
         els.tax.textContent = yen(tax);
         els.total.textContent = yen(total);
+
+        if (els.formSubtotal) els.formSubtotal.textContent = yen(subtotal);
+        if (els.formTaxLabel) els.formTaxLabel.textContent = `消費税（${taxRate}%）`;
+        if (els.formTax) els.formTax.textContent = yen(tax);
+        if (els.formTotal) els.formTotal.textContent = yen(total);
     };
 
     // 明細テーブルはform要素の外にあり、form.addEventListenerではイベントを拾えないため、
