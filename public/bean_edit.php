@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <datalist id="bean-name-list">
                         <?php foreach ($beanNames as $beanName): ?>
                             <option value="<?= h($beanName) ?>">
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
                     </datalist>
                 </div>
 
@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <datalist id="supplier-list">
                         <?php foreach ($suppliers as $supplier): ?>
                             <option value="<?= h($supplier) ?>">
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
                     </datalist>
                 </div>
 
@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
 
             <div class="form-actions">
-                <button type="submit" form="edit-form" class="submit-btn">決定</button>
+                <button type="submit" form="edit-form" class="submit-btn">変更</button>
 
                 <form method="post" action="bean_delete.php" onsubmit="return confirm('削除しますか？');">
                     <input type="hidden" name="id" value="<?= h($bean['id']) ?>">

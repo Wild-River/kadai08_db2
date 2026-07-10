@@ -9,6 +9,10 @@ $statusLabels = statusLabels();
 $customerstmt = $pdo->query("SELECT id, name FROM customers ORDER BY name");
 $customers = $customerstmt->fetchAll();
 
+// 品目名の候補（datalist用）：beansの商品名を重複なしで取得
+$beanstmt = $pdo->query("SELECT DISTINCT name FROM beans ORDER BY name");
+$beanNames = $beanstmt->fetchAll(PDO::FETCH_COLUMN);
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $id = $_GET['id'];
 
@@ -101,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit('更新エラー: ' . $e->getMessage());
     }
 
-    redirect('invoices_list.php');
+    redirect('invoice_edit.php?id=' . $id);
 }
 ?>
 
@@ -295,7 +299,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php if (empty($items)): ?>
                             <!-- 明細が無い場合は空行を1つ用意 -->
                             <tr>
-                                <td><input form="edit-form" type="text" name="item_name[]" class="form-input"></td>
+                                <td><input form="edit-form" type="text" name="item_name[]" class="form-input" list="bean-name-list" autocomplete="off"></td>
                                 <td><input form="edit-form" type="number" name="quantity[]" class="form-input" value="1"></td>
                                 <td><input form="edit-form" type="text" name="unit_price[]" class="form-input money-input" value="0" inputmode="numeric" autocomplete="off"></td>
                                 <td class="item-amount">0 円</td>
@@ -304,7 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php else: ?>
                             <?php foreach ($items as $item): ?>
                                 <tr>
-                                    <td><input form="edit-form" type="text" name="item_name[]" class="form-input" value="<?= h($item['item_name']) ?>"></td>
+                                    <td><input form="edit-form" type="text" name="item_name[]" class="form-input" list="bean-name-list" value="<?= h($item['item_name']) ?>"></td>
                                     <td><input form="edit-form" type="number" name="quantity[]" class="form-input" value="<?= h($item['quantity']) ?>"></td>
                                     <td><input form="edit-form" type="text" name="unit_price[]" class="form-input money-input" value="<?= h(number_format($item['unit_price'])) ?>" inputmode="numeric" autocomplete="off"></td>
                                     <td class="item-amount"><?= h(number_format($item['quantity'] * $item['unit_price'])) ?> 円</td>
@@ -314,11 +318,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php endif; ?>
                     </tbody>
                 </table>
+                <datalist id="bean-name-list">
+                    <?php foreach ($beanNames as $beanName): ?>
+                        <option value="<?= h($beanName) ?>">
+                        <?php endforeach; ?>
+                </datalist>
                 <button type="button" form="edit-form" class="submit-btn" onclick="addRow()">＋ 明細行を追加</button>
             </div>
 
             <div class="form-actions">
-                <button type="submit" form="edit-form" class="submit-btn">決定</button>
+                <button type="submit" form="edit-form" class="submit-btn">変更</button>
 
                 <form method="post" action="invoice_delete.php" onsubmit="return confirm('削除しますか？');">
                     <input type="hidden" name="id" value="<?= h($invoice['id']) ?>">

@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let subtotal = 0;
         els.itemsBody.innerHTML = '';
-        form.querySelectorAll('#items-body tr').forEach((row) => {
+        document.querySelectorAll('#items-body tr').forEach((row) => {
             const name = row.querySelector('[name="item_name[]"]').value.trim();
             if (name === '') return;
 
@@ -69,10 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
         els.total.textContent = yen(total);
     };
 
-    form.addEventListener('input', update);
-    form.addEventListener('change', update);
+    // 明細テーブルはform要素の外にあり、form.addEventListenerではイベントを拾えないため、
+    // document全体で拾ってから明細以外の入力もまとめて拾う
+    document.addEventListener('input', update);
+    document.addEventListener('change', update);
     // 明細行の削除は removeRow() 側でイベントを発火しないため、クリックを拾って更新する
-    form.addEventListener('click', (event) => {
+    document.addEventListener('click', (event) => {
         if (event.target.closest('.delete-btn')) update();
     });
 

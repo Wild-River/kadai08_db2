@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
 
             <div class="form-actions">
-                <button type="submit" form="edit-form" class="submit-btn">決定</button>
+                <button type="submit" form="edit-form" class="submit-btn">変更</button>
 
                 <form method="post" action="customer_delete.php" onsubmit="return confirm('削除しますか？');">
                     <input type="hidden" name="id" value="<?= h($customer['id']) ?>">

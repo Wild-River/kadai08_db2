@@ -7,6 +7,10 @@ require_once '../config/func.php';
 $stmt = $pdo->query("SELECT id, name FROM customers ORDER BY name");
 $customers = $stmt->fetchAll();
 
+// 品目名の候補（datalist用）：beansの商品名を重複なしで取得
+$beanstmt = $pdo->query("SELECT DISTINCT name FROM beans ORDER BY name");
+$beanNames = $beanstmt->fetchAll(PDO::FETCH_COLUMN);
+
 $statusLabels = statusLabels();
 $company = companyInfo();
 
@@ -142,30 +146,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input type="number" name="tax_rate" class="form-input" value="10" required>
                             </label>
                         </div>
-
-                        <h2>明細</h2>
-                        <table id="items-table">
-                            <thead>
-                                <tr>
-                                    <th>品目</th>
-                                    <th>数量</th>
-                                    <th>単価</th>
-                                    <th>金額</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="items-body">
-                                <!-- JSで行を追加する。最初に1行だけ用意しておく -->
-                                <tr>
-                                    <td><input type="text" name="item_name[]" class="form-input"></td>
-                                    <td><input type="number" name="quantity[]" class="form-input" value="1"></td>
-                                    <td><input type="text" name="unit_price[]" class="form-input money-input" value="0" inputmode="numeric" autocomplete="off"></td>
-                                    <td class="item-amount">0 円</td>
-                                    <td><button type="button" class="delete-btn delete-btn--icon" onclick="removeRow(this)" title="削除" aria-label="削除"><i class="fa-solid fa-trash"></i></button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button type="button" class="submit-btn" onclick="addRow()">＋ 明細行を追加</button>
                     </form>
                 </div>
 
@@ -241,6 +221,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
                 </aside>
+            </div>
+
+            <div class="invoice-items-section">
+                <h2>明細</h2>
+                <table id="items-table" data-form="new-form">
+                    <thead>
+                        <tr>
+                            <th>品目</th>
+                            <th>数量</th>
+                            <th>単価</th>
+                            <th>金額</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-body">
+                        <!-- JSで行を追加する。最初に1行だけ用意しておく -->
+                        <tr>
+                            <td><input form="new-form" type="text" name="item_name[]" class="form-input" list="bean-name-list" autocomplete="off"></td>
+                            <td><input form="new-form" type="number" name="quantity[]" class="form-input" value="1"></td>
+                            <td><input form="new-form" type="text" name="unit_price[]" class="form-input money-input" value="0" inputmode="numeric" autocomplete="off"></td>
+                            <td class="item-amount">0 円</td>
+                            <td><button type="button" class="delete-btn delete-btn--icon" onclick="removeRow(this)" title="削除" aria-label="削除"><i class="fa-solid fa-trash"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <datalist id="bean-name-list">
+                    <?php foreach ($beanNames as $beanName): ?>
+                        <option value="<?= h($beanName) ?>">
+                    <?php endforeach; ?>
+                </datalist>
+                <button type="button" form="new-form" class="submit-btn" onclick="addRow()">＋ 明細行を追加</button>
             </div>
 
             <div class="form-actions">

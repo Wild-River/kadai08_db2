@@ -6,7 +6,7 @@ function addRow() {
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
-        <td><input type="text" name="item_name[]" class="form-input"></td>
+        <td><input type="text" name="item_name[]" class="form-input" list="bean-name-list" autocomplete="off"></td>
         <td><input type="number" name="quantity[]" class="form-input" value="1"></td>
         <td><input type="text" name="unit_price[]" class="form-input money-input" value="0" inputmode="numeric" autocomplete="off"></td>
         <td class="item-amount">0 円</td>

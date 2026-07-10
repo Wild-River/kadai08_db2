@@ -10,7 +10,15 @@
       "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -l /Applications/MAMP/htdocs/kadai08_db2/public/customer_edit.php)",
       "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -l /Applications/MAMP/htdocs/kadai08_db2/public/bean_new.php)",
       "Read(//Users/rumi/Downloads/**)",
-      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -l /Applications/MAMP/htdocs/kadai08_db2/config/sidebar.php)"
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -l /Applications/MAMP/htdocs/kadai08_db2/config/sidebar.php)",
+      "Bash(ls /Applications/MAMP/Library/bin/ 2>/dev/null | grep -i mysql; MYSQL_BIN=$\\(find /Applications/MAMP -maxdepth 4 -name \"mysql\" -type f 2>/dev/null | head -1\\); echo \"found: $MYSQL_BIN\")",
+      "Read(//Applications/MAMP/Library/bin/**)",
+      "Read(//Applications/MAMP/Library/**)",
+      "Read(//Applications/MAMP/Library/bin/mysql80/**)",
+      "Read(//Applications/MAMP/**)",
+      "Read(//Applications/MAMP/bin/php/**)",
+      "Bash(grep -i \"bin/php$\")",
+      "Bash(curl -s -b /tmp/cj.txt \"http://localhost:8899/invoice_edit.php?id=1\" -o /tmp/invoice_edit_1.html -w \"HTTP:%{http_code}\\\\n\")"
     ]
   }
 }
