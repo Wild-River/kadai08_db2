@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($password, $user['password_hash'])) {
+        session_regenerate_id(true);
         $_SESSION['admin_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         redirect('dashboard.php'); // ①既存のredirect()をそのまま使う
